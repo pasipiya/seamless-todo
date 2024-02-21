@@ -19,5 +19,13 @@ export class ProductService {
     return ProductModel?.create(input);
   }
 
+  public async updateProduct(query: FilterQuery<ProductDocument>,
+    update: UpdateQuery<ProductDocument>,
+    options: QueryOptions) {
+    return ProductModel?.findOneAndUpdate(query, update, options)
+  }
+  public async deleteProduct(query: FilterQuery<ProductDocument>) {
+    return ProductModel?.deleteOne(query)
+  }
 
 }

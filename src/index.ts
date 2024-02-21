@@ -8,7 +8,6 @@ const app:Express = express();
 const port = process.env.PORT || 4000;
 
 const myLogger = function (req:Request, res:Response, next:NextFunction) {
-    console.log('LOGGED')
     next();
 }
 

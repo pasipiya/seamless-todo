@@ -1,6 +1,9 @@
-import { Request,Response } from "express";
-import { ProductService } from "../services/product.service.controller";
-const productService = new ProductService()
+import { Request,Response,NextFunction } from "express";
+import { ProductService } from "../services/product.service";
+import { BaseResponseUtil } from '../utils/base.response.util';
+
+const productService = new ProductService();
+const baseResponseUtil = new BaseResponseUtil();
 
 export class ProductController {
 
@@ -8,10 +11,12 @@ export class ProductController {
         try {
             const productId = req.params.productId;
             const data = await productService.getProductService({ _id: productId });
-            return res.send(data);
+            const response = await baseResponseUtil.baseResponse(data,"Data Fetched Successfully",0);
+            return res.send(response);
             
-        } catch (error) {
-            res.status(400).send(error);
+        } catch (e:any) {
+            const response = baseResponseUtil.baseResponse(null,e.error_message,e.error_code);
+            res.status(400).send(response);
             
         }
     }
@@ -21,13 +26,52 @@ export class ProductController {
             const product = req.body;
 
             const data = await productService.createProduct(product);
-            console.log(data);
+            const response = await baseResponseUtil.baseResponse(data,"Data Fetched Successfully",0);
             
-            return res.send(data);
+            return res.send(response);
             
-        } catch (error) {
-            res.status(400).send(error);
+        } catch (e:any) {
+            const response = baseResponseUtil.baseResponse(null,e.error_message,e.error_code)
+            res.status(400).send(response);
             
         }
+    }
+
+    public async updateProductControllerHandler(req: Request, res: Response) {
+        try {
+            const productId = req.params.productId;
+            const product = req.body;
+            const data = await productService.updateProduct({productId},product, {
+                new:true,
+            });
+            const response = await baseResponseUtil.baseResponse(data,"Data Update Successfully",0);
+            
+            return res.send(response);
+            
+        } catch (e:any) {
+            const response = baseResponseUtil.baseResponse(null,e.error_message,e.error_code)
+            res.status(400).send(response);
+            
+        }
+    }
+
+    public async deleteProductControllerHandler(req: Request, res: Response) {
+        try {
+            const productId = req.params.productId;
+
+            const data = await productService.deleteProduct({ _id: productId });
+            const response = await baseResponseUtil.baseResponse(data,"Data Deleted Successfully",0);
+            
+            return res.send(response);
+            
+        } catch (e:any) {
+            const response = baseResponseUtil.baseResponse(null,e.error_message,e.error_code)
+            res.status(400).send(response);
+            
+        }
+    }
+
+    static routerLogger (req:Request, res:Response, next:NextFunction) {
+        next();
     }
 }
